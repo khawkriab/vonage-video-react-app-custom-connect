@@ -33,6 +33,7 @@ import {
 import { MAX_PIN_COUNT_DESKTOP, MAX_PIN_COUNT_MOBILE } from '../../utils/constants';
 import VonageVideoClient from '../../utils/VonageVideoClient';
 import useEmoji, { EmojiWrapper } from '../../hooks/useEmoji';
+import { useSearchParams } from 'react-router-dom';
 
 export type { ChatMessageType } from '../../types/chat';
 
@@ -126,6 +127,11 @@ const MAX_PIN_COUNT = isMobile() ? MAX_PIN_COUNT_MOBILE : MAX_PIN_COUNT_DESKTOP;
  * @returns {SessionContextType} a context provider for a publisher preview
  */
 const SessionProvider = ({ children }: SessionProviderProps): ReactElement => {
+    let [searchParams] = useSearchParams();
+  const apiKey = searchParams.get("apiKey");
+  const sessionId = searchParams.get("sessionId");
+  const token = searchParams.get("token");
+  // 
   const [lastStreamUpdate, setLastStreamUpdate] = useState<StreamPropertyChangedEvent | null>(null);
   const vonageVideoClient = useRef<null | VonageVideoClient>(null);
   const [reconnecting, setReconnecting] = useState(false);
@@ -350,11 +356,15 @@ const SessionProvider = ({ children }: SessionProviderProps): ReactElement => {
    */
   const joinRoom = useCallback(
     async (roomName: string) => {
-      fetchCredentials(roomName)
-        .then((credentials) => {
-          connect(credentials.data);
-        })
-        .catch(console.warn);
+      // fetchCredentials(roomName)
+      //   .then((credentials) => {
+      //     connect(credentials.data);
+      //   })
+      //   .catch(console.warn);
+      if(apiKey&&sessionId&&token){
+
+        connect({apiKey,sessionId,token});
+      }
     },
     [connect]
   );
